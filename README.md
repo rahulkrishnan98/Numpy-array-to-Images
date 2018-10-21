@@ -2,9 +2,9 @@
 A python script that generates the frame by frame images for a given Numpy input.
 
 # Install
-python -m pip install numpy
-python -m pip install pillow
-python -m pip install opencv-python
+python -m pip install numpy  
+python -m pip install pillow  
+python -m pip install opencv-python  
 
 # Run
 python checker.py
