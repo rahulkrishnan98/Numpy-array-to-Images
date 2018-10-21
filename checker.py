@@ -1,5 +1,7 @@
 
 import numpy as np
+import cv2
+
 np.set_printoptions(threshold=np.inf)
 def generate_movies(n_samples=1200, n_frames=15):
     row = 80
@@ -71,3 +73,20 @@ for g in range(15):
     img = Image.fromarray(another, 'L')
     img.save(str(g)+'my.png')
 
+# Create video
+img_array = []
+for i in range(15):
+    img_array.append(cv2.imread(str(i)+'my.png'))
+
+height,width,layers = img_array[0].shape
+size = (width,height)
+fps = 1
+
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+video = cv2.VideoWriter('video.avi',fourcc,fps,size)
+
+for j in range(len(img_array)):
+    video.write(img_array[j])
+
+cv2.destroyAllWindows()
+video.release()
