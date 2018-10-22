@@ -1,8 +1,12 @@
 
 import numpy as np
 import cv2
+from PIL import Image
+import os
 
 np.set_printoptions(threshold=np.inf)
+
+
 def generate_movies(n_samples=1200, n_frames=15):
     row = 80
     col = 80
@@ -56,37 +60,59 @@ def generate_movies(n_samples=1200, n_frames=15):
     shifted_movies[shifted_movies >= 1] = 1
     return noisy_movies, shifted_movies
 
-noisy_movies, shifted_movies = generate_movies(n_samples=1)
-for g in range(15):
-    another=np.empty([40,40],dtype=np.float)
-    new_ar=shifted_movies[0][g][:][:]
-    for i in range(len(new_ar)):
-        for j in range(len(new_ar)):
-            another[i][j] = new_ar[i][j][0]
+def save_samples(sampleno,movies,dirname,frame_size):
+    k = sampleno
+    for g in range(frame_size):
+        another=np.empty([40,40],dtype=np.float)
+        new_ar=movies[k][g][:][:]
+        for i in range(len(new_ar)):
+            for j in range(len(new_ar)):
+                another[i][j] = new_ar[i][j][0]
 
-    print(another.shape)
+        img = Image.fromarray(another, 'L')
+        img.save(dirname + 'Frames/' + str(g)+'.png')
 
-    from PIL import Image
-    import numpy as np
+        # Create video
+        img_array = []
+        for i in range(frame_size):
+            img_array.append(cv2.imread(dirname + 'Frames/' + str(i)+'.png'))
+
+        height,width,layers = img_array[0].shape
+        size = (width,height)
+        fps = 1
+
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        video = cv2.VideoWriter(dirname + 'video.avi',fourcc,fps,size)
+
+        for j in range(len(img_array)):
+            video.write(img_array[j])
+
+        cv2.destroyAllWindows()
+        video.release()
 
 
-    img = Image.fromarray(another, 'L')
-    img.save(str(g)+'my.png')
 
-# Create video
-img_array = []
-for i in range(15):
-    img_array.append(cv2.imread(str(i)+'my.png'))
 
-height,width,layers = img_array[0].shape
-size = (width,height)
-fps = 1
+# Main Code
 
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-video = cv2.VideoWriter('video.avi',fourcc,fps,size)
+sample_size = 10
+frame_size = 15
+noisy_movies, shifted_movies = generate_movies(n_samples=sample_size)
 
-for j in range(len(img_array)):
-    video.write(img_array[j])
+for sample_no in range(sample_size):
+    rootdir = 'Samples/'
+    sampledir = rootdir + 'Sample'+str(sample_no+1)+'/'
+    noisy_dirname = sampledir + 'Noisy/'
+    shifted_dirname = sampledir +'Shifted/'
+    
+    if not os.path.exists(sampledir):
+        os.makedirs(noisy_dirname+'Frames/')
+        os.makedirs(shifted_dirname+'Frames/')
+    
+    save_samples(sample_no,noisy_movies,noisy_dirname,frame_size)
+    save_samples(sample_no,shifted_movies,shifted_dirname,frame_size)
+    
+    
 
-cv2.destroyAllWindows()
-video.release()
+
+   
