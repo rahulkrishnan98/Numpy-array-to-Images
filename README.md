@@ -1,6 +1,6 @@
 # Numpy-array-to-Images
-A python script that generates the frame by frame images for a given Numpy input.
-
+A python script that generates the frame by frame images for a given Numpy input.  
+![MovingBox](https://github.com/rahulkrishnan98/Numpy-array-to-Images/blob/master/movingBox.gif)
 # Install
 python -m pip install numpy  
 python -m pip install pillow  
